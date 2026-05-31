@@ -1,5 +1,6 @@
-## FINAL WORKING SCRIPT ###
+### FINAL WORKING SCRIPT WITH CORRECTIONS ###
 
+import os
 import streamlit as st
 import torch
 import numpy as np
@@ -10,12 +11,25 @@ import ollama
 st.set_page_config(page_title="Infection and AMR AI Chat Assistant", layout="centered")
 st.title("🧬 Infection and AMR AI Chat Assistant")
 
+# ============================================
+# SETTINGS & RELATIVE PATHS (FIXED FOR SIBLING FOLDERS)
+# ============================================
+# Dynamically gets the directory where your script is located: D:\Dissertation_Project\Chatbot\Scripts
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Steps up out of 'Scripts' to the project root: D:\Dissertation_Project\Chatbot
+BASE_DIR = os.path.dirname(SCRIPT_DIR)
+
+# Builds the path directly into the sibling folder: D:\Dissertation_Project\Chatbot\Outputs\all_pdfs_pagewise_embeddings.pt
+MATRIX_DATA_PATH = os.path.join(BASE_DIR, "Outputs", "all_pdfs_pagewise_embeddings.pt")
+
 @st.cache_resource
 def load_data():
-    data = torch.load(
-    r"D:\Dissertation_Project\Chatbot\Outputs\all_pdfs_pagewise_embeddings.pt",
-    weights_only=False
-)
+    if not os.path.exists(MATRIX_DATA_PATH):
+        st.error(f"Critical Error: Embedding database file not found at: {MATRIX_DATA_PATH}. Please run the preprocessing script first.")
+        st.stop()
+        
+    data = torch.load(MATRIX_DATA_PATH, weights_only=False)
     embeddings = np.array([item["embedding"] for item in data])
     chunks = [item["chunk"] for item in data]
     pdfs = [item["pdf"] for item in data]
@@ -36,9 +50,18 @@ def search(query, top_k=4):
     
     results = []
     for i in top_idx:
-        # Lowered threshold slightly to ensure we get context if it exists
         if scores[i] > 0.30: 
             results.append({"text": chunks[i], "pdf": pdfs[i], "page": pages[i]})
+            
+    # --- FIX START: Handle Empty Results Explicitly (CORRECTION 3) ---
+    if not results:
+        results.append({
+            "text": "SYSTEM WARNING: No matching source documents were found in the database that met the confidence threshold score of 0.30. Explain clearly to the user that no local document context matched their query.",
+            "pdf": "None",
+            "page": 0
+        })
+    # --- FIX END ---
+    
     return results
 
 # ============================================
@@ -47,7 +70,6 @@ def search(query, top_k=4):
 
 def ask_llm_stream(question, results):
     # 1. Pull the last 5 messages from Streamlit's session state
-    # This is the only way the model will 'remember' the influenza question.
     history_lines = []
     if "messages" in st.session_state:
         for m in st.session_state.messages[-5:]:
@@ -60,13 +82,14 @@ def ask_llm_stream(question, results):
         "1. CHAT HISTORY: Use this to answer questions like 'What was my last question?'\n"
         "2. RESEARCH CONTEXT: Use this only for technical biomedical questions.\n"
         "STRICT RULES:\n"
+        "- If the Research Context contains a 'SYSTEM WARNING', you MUST inform the user explicitly that no relevant local document sources match their query.\n"
         "- If the user asks about the conversation history, IGNORE the Research Context.\n"
         "- Your response MUST be a single paragraph of 7-8 lines.\n"
         "- Never use bullet points. Finish your final sentence completely."
     )
 
     # 3. Format the data for the model
-    context_text = "\n".join([r['text'] for r in results]) if results else "No context found."
+    context_text = "\n".join([r['text'] for r in results])
     
     user_message = (
         f"--- START OF CHAT HISTORY ---\n{history_str}\n--- END OF CHAT HISTORY ---\n\n"
@@ -87,6 +110,7 @@ def ask_llm_stream(question, results):
             "num_thread": 8
         }
     )
+
 # ============================================
 # UI & FLOW
 # ============================================
@@ -107,21 +131,16 @@ if question:
         response_placeholder = st.empty()
         full_response = ""
         
-        # Always run search; if no high-quality matches are found, 
-        # results will be empty and the LLM will fall back to its internal identity.
         results = search(question)
         
         for chunk in ask_llm_stream(question, results):
             content = chunk["message"]["content"]
             full_response += content
-            # Add a blinking cursor effect while typing
             response_placeholder.markdown(full_response + "▌")
         
-        # Final clean render
         response_placeholder.markdown(full_response)
     
     st.session_state.messages.append({"role": "assistant", "content": full_response})
-
 
 
 
