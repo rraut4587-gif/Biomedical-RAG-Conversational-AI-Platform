@@ -1,147 +1,3 @@
-# import os
-# import torch
-# import PyPDF2
-# from collections import defaultdict, Counter
-
-# folder = r"C:\Users\rraut\OneDrive\Desktop\Dissertation\Work_For_10-13_March\Data_PDFs"
-
-# data = torch.load(
-#     "all_pdfs_pagewise_embeddings.pt",
-#     weights_only=False
-# )
-
-# chunk_counts = Counter([d["pdf"] for d in data])
-
-# pages_in_embeddings = defaultdict(set)
-
-# for d in data:
-#     pages_in_embeddings[d["pdf"]].add(d["page"])
-
-
-# print("\nPDF SUMMARY\n")
-
-# print(
-#     f"{'PDF':40} | {'Real':5} | {'Embedded':8} | {'Chunks':6} | Missing"
-# )
-
-# print("-" * 90)
-
-
-# for f in os.listdir(folder):
-
-#     if not f.endswith(".pdf"):
-#         continue
-
-#     path = os.path.join(folder, f)
-
-#     # real pages
-#     with open(path, "rb") as file:
-#         reader = PyPDF2.PdfReader(file)
-#         real_pages = len(reader.pages)
-
-#     # embedded pages
-#     embedded_pages = sorted(pages_in_embeddings[f])
-
-#     embedded_count = len(embedded_pages)
-
-#     chunks = chunk_counts[f]
-
-#     # missing pages
-#     missing = [
-#         p for p in range(1, real_pages + 1)
-#         if p not in embedded_pages
-#     ]
-
-#     print(
-#         f"{f[:40]:40} | "
-#         f"{real_pages:5} | "
-#         f"{embedded_count:8} | "
-#         f"{chunks:6} | "
-#         f"{missing}"
-#     )
-
-
-
-
-
-# import os
-# import torch
-# import PyPDF2
-# from collections import defaultdict, Counter
-
-# folder = r"C:\Users\rraut\OneDrive\Desktop\Dissertation\Work_For_10-13_March\Data_PDFs"
-
-# data = torch.load(
-#     "all_pdfs_pagewise_embeddings.pt",
-#     weights_only=False
-# )
-
-# chunk_counts = Counter([d["pdf"] for d in data])
-
-# pages_in_embeddings = defaultdict(set)
-
-# # NEW: store embedding shapes per PDF
-# embedding_shapes = defaultdict(list)
-
-# for d in data:
-#     pages_in_embeddings[d["pdf"]].add(d["page"])
-    
-#     # get shape of embedding
-#     emb_shape = tuple(d["embedding"].shape)
-#     embedding_shapes[d["pdf"]].append(emb_shape)
-
-
-# print("\nPDF SUMMARY\n")
-
-# print(
-#     f"{'S.No':5} | {'PDF':40} | {'Real':5} | {'Embedded':8} | {'Chunks':6} | {'Emb Shape':15} | Missing"
-# )
-
-# print("-" * 130)
-
-
-# for i, f in enumerate(os.listdir(folder), start=1):
-
-#     if not f.endswith(".pdf"):
-#         continue
-
-#     path = os.path.join(folder, f)
-
-#     # real pages
-#     with open(path, "rb") as file:
-#         reader = PyPDF2.PdfReader(file)
-#         real_pages = len(reader.pages)
-
-#     # embedded pages
-#     embedded_pages = sorted(pages_in_embeddings[f])
-#     embedded_count = len(embedded_pages)
-
-#     chunks = chunk_counts[f]
-
-#     # missing pages
-#     missing = [
-#         p for p in range(1, real_pages + 1)
-#         if p not in embedded_pages
-#     ]
-
-#     # embedding shapes
-#     unique_shapes = list(set(embedding_shapes[f]))
-
-#     print(
-#         f"{i:5} | "
-#         f"{f[:40]:40} | "
-#         f"{real_pages:5} | "
-#         f"{embedded_count:8} | "
-#         f"{chunks:6} | "
-#         f"{str(unique_shapes):15} | "
-#         f"{missing}"
-#     )
-
-
-
-
-
-
 import os
 import torch
 import PyPDF2
@@ -335,3 +191,151 @@ for f in os.listdir(folder):
     )
 
     serial += 1
+
+
+
+
+
+
+
+# import os
+# import torch
+# import PyPDF2
+# from collections import defaultdict, Counter
+
+# folder = r"C:\Users\rraut\OneDrive\Desktop\Dissertation\Work_For_10-13_March\Data_PDFs"
+
+# data = torch.load(
+#     "all_pdfs_pagewise_embeddings.pt",
+#     weights_only=False
+# )
+
+# chunk_counts = Counter([d["pdf"] for d in data])
+
+# pages_in_embeddings = defaultdict(set)
+
+# for d in data:
+#     pages_in_embeddings[d["pdf"]].add(d["page"])
+
+
+# print("\nPDF SUMMARY\n")
+
+# print(
+#     f"{'PDF':40} | {'Real':5} | {'Embedded':8} | {'Chunks':6} | Missing"
+# )
+
+# print("-" * 90)
+
+
+# for f in os.listdir(folder):
+
+#     if not f.endswith(".pdf"):
+#         continue
+
+#     path = os.path.join(folder, f)
+
+#     # real pages
+#     with open(path, "rb") as file:
+#         reader = PyPDF2.PdfReader(file)
+#         real_pages = len(reader.pages)
+
+#     # embedded pages
+#     embedded_pages = sorted(pages_in_embeddings[f])
+
+#     embedded_count = len(embedded_pages)
+
+#     chunks = chunk_counts[f]
+
+#     # missing pages
+#     missing = [
+#         p for p in range(1, real_pages + 1)
+#         if p not in embedded_pages
+#     ]
+
+#     print(
+#         f"{f[:40]:40} | "
+#         f"{real_pages:5} | "
+#         f"{embedded_count:8} | "
+#         f"{chunks:6} | "
+#         f"{missing}"
+#     )
+
+
+
+
+
+# import os
+# import torch
+# import PyPDF2
+# from collections import defaultdict, Counter
+
+# folder = r"C:\Users\rraut\OneDrive\Desktop\Dissertation\Work_For_10-13_March\Data_PDFs"
+
+# data = torch.load(
+#     "all_pdfs_pagewise_embeddings.pt",
+#     weights_only=False
+# )
+
+# chunk_counts = Counter([d["pdf"] for d in data])
+
+# pages_in_embeddings = defaultdict(set)
+
+# # NEW: store embedding shapes per PDF
+# embedding_shapes = defaultdict(list)
+
+# for d in data:
+#     pages_in_embeddings[d["pdf"]].add(d["page"])
+    
+#     # get shape of embedding
+#     emb_shape = tuple(d["embedding"].shape)
+#     embedding_shapes[d["pdf"]].append(emb_shape)
+
+
+# print("\nPDF SUMMARY\n")
+
+# print(
+#     f"{'S.No':5} | {'PDF':40} | {'Real':5} | {'Embedded':8} | {'Chunks':6} | {'Emb Shape':15} | Missing"
+# )
+
+# print("-" * 130)
+
+
+# for i, f in enumerate(os.listdir(folder), start=1):
+
+#     if not f.endswith(".pdf"):
+#         continue
+
+#     path = os.path.join(folder, f)
+
+#     # real pages
+#     with open(path, "rb") as file:
+#         reader = PyPDF2.PdfReader(file)
+#         real_pages = len(reader.pages)
+
+#     # embedded pages
+#     embedded_pages = sorted(pages_in_embeddings[f])
+#     embedded_count = len(embedded_pages)
+
+#     chunks = chunk_counts[f]
+
+#     # missing pages
+#     missing = [
+#         p for p in range(1, real_pages + 1)
+#         if p not in embedded_pages
+#     ]
+
+#     # embedding shapes
+#     unique_shapes = list(set(embedding_shapes[f]))
+
+#     print(
+#         f"{i:5} | "
+#         f"{f[:40]:40} | "
+#         f"{real_pages:5} | "
+#         f"{embedded_count:8} | "
+#         f"{chunks:6} | "
+#         f"{str(unique_shapes):15} | "
+#         f"{missing}"
+#     )
+
+
+
